@@ -37,6 +37,11 @@ resource "azurerm_sql_firewall_rule" "example" {
   end_ip_address      = "0.0.0.0"
 }
 
+tags = {
+    environment = "Production"
+    groupName = var.groupName
+    approver  = var.approver
+ }
 
 variable "prefix" {
   description = "The prefix which should be used for all resources"
@@ -60,4 +65,9 @@ variable "azure_client_secret" {}
 variable "azure_tenant_id" {}
 
 variable "azure_rgname" {}
+
+variable "groupName" {}
+
+variable "approver" {}
+
 
