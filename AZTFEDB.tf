@@ -1,61 +1,63 @@
-#Directory = /ayushrawat18/really-simple-vm::master
-#File1 = main.tf
-#File2 = variables.tf
- 
-#File =main.tf
 provider "azurerm" {
+  subscription_id = var.azure_subscription_id
+  client_id       = var.azure_client_id
+  client_secret   = var.azure_client_secret
+  tenant_id       = var.azure_tenant_id
   features {}
-  subscription_id = var.subsId
-  client_id       = var.clientId
-  client_secret   = var.clientSecret
-  tenant_id       = var.tenantId
 }
-resource "azurerm_resource_group" "mysqlresourcegroup" {
-  name     = "mysqlresourcegroup"
-  location = var.location
+
+
+resource "azurerm_sql_server" "example" {
+  name                         = "${var.prefix}-sqlsvr"
+  resource_group_name          = "${var.azure_rgname}"
+  location                     = "${var.location}"
+  version                      = "12.0"
+  administrator_login          = "4dm1n157r470r"
+  administrator_login_password = "4-v3ry-53cr37-p455w0rd!"
 }
-resource "azurerm_mysql_server" "mysql_server_instance1" {
-  name                = var.stack_name
-  location            = azurerm_resource_group.mysqlresourcegroup.location
-  resource_group_name = azurerm_resource_group.mysqlresourcegroup.name
-  administrator_login          = var.bbdd_admin_user
-  administrator_login_password = var.bbdd_admin_pwd
-  sku_name   = "B_Gen5_2"
-  storage_mb = 5120
-  version    = "5.7"
-  auto_grow_enabled                 = true
-  backup_retention_days             = 7
-  geo_redundant_backup_enabled      = false
-  infrastructure_encryption_enabled = false
-  public_network_access_enabled     = true
-  ssl_enforcement_enabled           = true
-  ssl_minimal_tls_version_enforced  = "TLS1_2"
+
+resource "azurerm_sql_database" "example" {
+  name                             = "${var.prefix}-db"
+  resource_group_name              = "${var.azure_rgname}"
+  location                         = "${var.location}"
+  server_name                      = "${azurerm_sql_server.example.name}"
+  edition                          = "Basic"
+  collation                        = "SQL_Latin1_General_CP1_CI_AS"
+  create_mode                      = "Default"
+  requested_service_objective_name = "Basic"
 }
- 
-#File =variables.tf
- 
-variable "stack_name" {
-  type    = string
-  default = "mysqlserverinstance1"
+
+# Enables the "Allow Access to Azure services" box as described in the API docs
+# https://docs.microsoft.com/en-us/rest/api/sql/firewallrules/createorupdate
+resource "azurerm_sql_firewall_rule" "example" {
+  name                = "allow-azure-services"
+  resource_group_name = "${var.azure_rgname}"
+  server_name         = "${azurerm_sql_server.example.name}"
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
 }
+
+
+variable "prefix" {
+  description = "The prefix which should be used for all resources"
+  default = "pfx"
+}
+
 variable "location" {
-  type = string
-  default = "West Europe"
+  description = "The Azure Region in which all resources are created"
 }
-variable "bbdd_admin_user"{
-  type = string
-  default = "mysqladminun"
+
+variable "VMSize" {
+  default = "Standard_H8m"
 }
-variable "bbdd_admin_pwd"{
-  type = string
-  default = "H@Sh1CoR3!"
-}
-variable "subsId" {
-   
-}
-variable "clientId" {
-}
-variable "clientSecret" {
-}
-variable "tenantId" {
-}
+
+variable "azure_subscription_id" {}
+
+variable "azure_client_id" {}
+
+variable "azure_client_secret" {}
+
+variable "azure_tenant_id" {}
+
+variable "azure_rgname" {}
+
