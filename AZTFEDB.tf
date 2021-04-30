@@ -38,11 +38,6 @@ resource "azurerm_sql_firewall_rule" "example" {
   tags                = "${var.tags}
 }
 
-variable "tags" = {
-    environment = "Production"
-    groupName = var.groupName
-    approver  = var.approver
- }
 
 variable "prefix" {
   description = "The prefix which should be used for all resources"
@@ -67,8 +62,6 @@ variable "azure_tenant_id" {}
 
 variable "azure_rgname" {}
 
-variable "groupName" {}
 
-variable "approver" {}
 
 
