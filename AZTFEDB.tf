@@ -39,7 +39,7 @@ resource "azurerm_sql_firewall_rule" "example" {
 
 
 resource "azurerm_sql_server" "exserver1" {
-  name                         = "${var.prefix}-sqlsvr"
+  name                         = "${var.prefix}-sqlsvr1"
   resource_group_name          = "${var.azure_rgname}"
   location                     = "${var.location}"
   version                      = "12.0"
@@ -48,7 +48,7 @@ resource "azurerm_sql_server" "exserver1" {
 }
 
 resource "azurerm_sql_database" "exserver1" {
-  name                             = "${var.prefix}-db"
+  name                             = "${var.prefix}-dbnew"
   resource_group_name              = "${var.azure_rgname}"
   location                         = "${var.location}"
   server_name                      = "${azurerm_sql_server.exserver1.name}"
